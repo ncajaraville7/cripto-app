@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import styled from '@emotion/styled'
 
 import Form from './components/Form'
+import Result from './components/Result'
+import Spinner from './components/Spinner'
 
 import Image from './image/cripto.png'
 
@@ -46,11 +48,15 @@ function App() {
 
   const [ coins, setCoins ] = useState({});
   const [ result, setResult ] = useState({});
+  const [ loading, setLoading ] = useState(false);
 
   useEffect( ()=> {
     if(Object.keys(coins).length > 0) {
       
       const quoteCripto = async () => {
+        setLoading(true);
+        setResult({});
+        
         const { coin, criptoCoin } = coins
         const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptoCoin}&tsyms=${coin}`
         
@@ -58,6 +64,7 @@ function App() {
         const result = await answer.json();
 
         setResult(result.DISPLAY[criptoCoin][coin])
+        setLoading(false);
       }
 
       quoteCripto();
@@ -76,6 +83,9 @@ function App() {
         <Form
           setCoins={setCoins}
         />
+
+        {loading && <Spinner />}
+        {result.PRICE && <Result result={result}/>}
       </div>
     </Container>
   )
